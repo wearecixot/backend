@@ -4,7 +4,8 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './model/user.entity';
 import { UserActivityEntity } from './model/user-activities.entity';
-import { StravaEntity } from './model/strava.entity';
+import AuthenticationModule from './api/authentications/authentication.module';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   imports: [
@@ -18,10 +19,15 @@ import { StravaEntity } from './model/strava.entity';
       entities: [
         UserEntity,
         UserActivityEntity,
-        StravaEntity
       ],
       synchronize: true,
-    })
+    }),
+    JwtModule.register({
+      global: true,
+      secret: 'secret',
+      signOptions: { expiresIn: '48h' },
+    }),
+    AuthenticationModule
   ],
   controllers: [AppController],
   providers: [AppService],
