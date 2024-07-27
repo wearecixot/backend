@@ -1,4 +1,4 @@
-import { Controller, Post, Req, UseGuards } from "@nestjs/common";
+import { Controller, Get, Post, Req, UseGuards } from "@nestjs/common";
 import RewardService from "./reward.service";
 import { JwtAuthGuard } from "src/auth/guard/jwt.guard";
 import { Request } from "express";
@@ -15,6 +15,11 @@ export default class RewardController {
         const user = request.user as any;
 
         return this.rewardService.redeemReward(user.id as string);
+    }
+
+    @Get('list')
+    async getAllAvailableReward() {
+        return this.rewardService.getAllAvailableRewards();
     }
 
 }

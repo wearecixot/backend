@@ -40,7 +40,7 @@ export default class RewardService {
             }
         })
 
-        if(user.balance < REWARD_PRICE[user.tier]) {
+        if (user.balance < REWARD_PRICE[user.tier]) {
             throw new BadRequestException('Insufficient balance');
         }
 
@@ -70,4 +70,17 @@ export default class RewardService {
             tier: reward.tier
         }
     }
+
+    async getAllAvailableRewards() {
+        return await this.rewardRepo.find({
+            select: {
+                id: true,
+                media: true,
+                merchant: true,
+                name: true,
+                tier: true
+            }
+        });
+    }
+
 }
