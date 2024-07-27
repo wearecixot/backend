@@ -1,3 +1,4 @@
+import { faker } from "@faker-js/faker";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { RewardTier } from "src/model/reward.entity";
@@ -128,7 +129,7 @@ export default class ActivitiesService {
         }, {
             lastActivity: new Date(),
             tierProgress: user.tierProgress + (activity ? 1 : 0),
-            balance: user.balance + points  
+            balance: user.balance + points
         })
 
 
@@ -176,7 +177,12 @@ export default class ActivitiesService {
     }
 
     async addPublicTransportActivity(userId: string) {
-        const res = await this.addActivity(userId, Activity.PUBLIC_TRANSPORT, 10, ActivityType.IN, new Date().toISOString(), {
+        const point = faker.number.int({
+            min: 50,
+            max: 70
+        })
+
+        const res = await this.addActivity(userId, Activity.PUBLIC_TRANSPORT, point, ActivityType.IN, new Date().toISOString(), {
             calories: 0,
             distance: 0,
             in: 'Stasiun Gambir',
