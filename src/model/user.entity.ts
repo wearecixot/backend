@@ -43,6 +43,11 @@ export abstract class UserEntity {
     @OneToMany(() => UserActivityEntity, userActivities => userActivities.user)
     userActivities: UserActivityEntity[];
 
+    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    lastActivity: Date;
+
+    @Column({ type: 'integer', default: 0 })
+    tierProgress: number;
 }
 
 

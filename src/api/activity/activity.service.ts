@@ -28,6 +28,36 @@ export default class ActivitiesService {
         return activities;
     }
 
+    async getActivitiesHeader(userId: string) {
+        const user = await this.userRepo.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) {
+            throw new NotFoundException('User not found');
+        }
+
+        const userActivities = await this.activityRepo.find({
+            where: {
+                user: {
+                    id: userId
+                }
+            }
+        })
+
+        return {
+            balance: user.balance,
+            totalCommute: userActivities.filter(activity => activity.activity === Activity.PUBLIC_TRANSPORT).length,
+            totalRun: userActivities.filter(activity => activity.activity === Activity.RUN).length,
+            totalBicycle: userActivities.filter(activity => activity.activity === Activity.BICYCLE).length,
+            totalCalories: 0, // TODO: create logic for deriving total calories
+            tier: user.tier,
+            tierProgress: user.tierProgress % 10,
+        }
+    }
+
     async addActivity(userId: string, activity: Activity, points: number, type: ActivityType, timestamp: string) {
         const user = await this.userRepo.findOne({
             where: {
@@ -49,6 +79,13 @@ export default class ActivitiesService {
         })
 
         await this.activityRepo.save(newActivity);
+
+        await this.userRepo.update({
+            id: userId
+        }, {
+            lastActivity: new Date(),
+            tierProgress: user.tierProgress + 1
+        })
 
         return newActivity;
     }

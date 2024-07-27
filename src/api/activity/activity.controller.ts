@@ -18,6 +18,14 @@ export default class ActivitiesController {
     }
 
     @UseGuards(JwtAuthGuard)
+    @Get('header')
+    async getActivitiesHeader(@Req() request: Request) {
+        const user = request.user;
+
+        return this.activitiesService.getActivitiesHeader((user as any).id as string);
+    }
+
+    @UseGuards(JwtAuthGuard)
     @Post('claim-points/:activityId')
     async claimPoints(@Req() request: Request, @Param('activityId') activityId: string) {
         const user = request.user;
