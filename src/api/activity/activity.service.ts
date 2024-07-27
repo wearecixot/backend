@@ -89,10 +89,10 @@ export default class ActivitiesService {
             createdAt: new Date(),
             timeStamp: timestamp,
             activityData: {
-                calories: activityData.calories || 0,
-                distance: activityData.distance || 0,
-                in: activityData.in || '',
-                out: activityData.out || ''
+                calories: activityData?.calories || 0,
+                distance: activityData?.distance || 0,
+                in: activityData?.in || '',
+                out: activityData?.out || ''
             }
         })
 
