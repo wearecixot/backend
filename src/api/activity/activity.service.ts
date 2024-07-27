@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Activity, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
@@ -10,7 +11,7 @@ export default class ActivitiesService {
         @InjectRepository(UserActivityEntity)
         private readonly activityRepo: Repository<UserActivityEntity>,
         @InjectRepository(UserEntity)
-        private readonly userRepo: Repository<UserEntity>
+        private readonly userRepo: Repository<UserEntity>,
     ) {}
 
     async getActivitiesHistory(userId: string) {

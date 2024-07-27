@@ -17,4 +17,12 @@ export default class ActivitiesController {
         return this.activitiesService.getActivitiesHistory((user as any).id as string);
     }
 
+    // @UseGuards(JwtAuthGuard)
+    // @Post('claim-points')
+    // async claimPoints(@Req() request: Request) {
+    //     const user = request.user;
+
+    //     return this.activitiesService.claimPoints((user as any).id as string);
+    // }
+
 }

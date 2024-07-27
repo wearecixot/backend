@@ -5,6 +5,7 @@ import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
 import ActivitiesService from "../activity/activity.service";
 import { ActivityType } from "src/model/user-activities.entity";
+import { ConfigService } from "@nestjs/config";
 
 const REWARD_PRICE = {
     [RewardTier.ONE]: 100,
@@ -19,7 +20,7 @@ export default class RewardService {
         private readonly userRepo: Repository<UserEntity>,
         @InjectRepository(RewardEntity)
         private readonly rewardRepo: Repository<RewardEntity>,
-        private readonly activityService: ActivitiesService
+        private readonly activityService: ActivitiesService,
     ) { }
 
     async redeemReward(userId: string) {

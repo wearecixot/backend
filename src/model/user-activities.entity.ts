@@ -51,4 +51,7 @@ export abstract class UserActivityEntity {
         enum: ActivityType,
     })
     type: ActivityType;
+
+    @Column({ type: 'boolean', default: false })
+    isPointClaimed: boolean;
 }

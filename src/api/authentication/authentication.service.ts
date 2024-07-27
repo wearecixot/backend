@@ -1,4 +1,5 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
+import { ConfigService } from "@nestjs/config";
 import { JwtService } from "@nestjs/jwt";
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
@@ -11,12 +12,13 @@ export default class AuthenticationService {
     constructor(
         @InjectRepository(UserEntity)
         private readonly userRepository: Repository<UserEntity>,
-        private jwtService: JwtService
+        private jwtService: JwtService,
+        private readonly configService: ConfigService
     ) {}
 
     async stravaLogin(code: string) {
-        const CLIENT_ID = '131163';
-        const CLIENT_SECRET = '1496a8dd4c4e0bb9cda67748ef779ab4103959fb';
+        const CLIENT_ID = this.configService.get('STRAVA_CLIENT_ID');
+        const CLIENT_SECRET = this.configService.get('STRAVA_CLIENT_SECRET');
 
         let userId: string = '';
         let userName: string = '';
@@ -38,7 +40,7 @@ export default class AuthenticationService {
                     stravaRefreshToken: data.refresh_token,
                     stravaMetadata: data.athlete as StravaMetadata,
                     profile: data.athlete.profile_medium || '',
-                    username: data.athlete.username,
+                    username: data.athlete.username || '',
                 })
 
               await this.userRepository.save(newUser);

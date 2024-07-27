@@ -10,6 +10,7 @@ import { JwtStrategy } from './auth/strategy/jwt.strategy';
 import ActivitiesModule from './api/activity/activity.module';
 import RewardEntity from './model/reward.entity';
 import RewardModule from './api/reward/reward.module';
+import { ConfigModule } from '@nestjs/config';
 
 @Module({
   imports: [
@@ -31,6 +32,9 @@ import RewardModule from './api/reward/reward.module';
       global: true,
       secret: 'secret',
       signOptions: { expiresIn: '48h' },
+    }),
+    ConfigModule.forRoot({
+      isGlobal: true,
     }),
     AuthenticationModule,
     ActivitiesModule,
