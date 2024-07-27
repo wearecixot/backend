@@ -11,6 +11,7 @@ import ActivitiesModule from './api/activity/activity.module';
 import RewardEntity from './model/reward.entity';
 import RewardModule from './api/reward/reward.module';
 import { ConfigModule } from '@nestjs/config';
+import ProfileModule from './api/profile/profile.module';
 
 @Module({
   imports: [
@@ -38,7 +39,8 @@ import { ConfigModule } from '@nestjs/config';
     }),
     AuthenticationModule,
     ActivitiesModule,
-    RewardModule
+    RewardModule,
+    ProfileModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
