@@ -4,7 +4,12 @@ import TransformResponseInterceptor from './interceptors/transform-response.inte
 import { HttpErrorFilter } from './filters/http-error.filters';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    cors: true
+  });
+
+  app.enableCors();
+  
   app.setGlobalPrefix('api');
   app.useGlobalInterceptors(new TransformResponseInterceptor());
   app.useGlobalFilters(new HttpErrorFilter());
