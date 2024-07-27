@@ -5,25 +5,16 @@ import { Request } from "express";
 
 @Controller('activities')
 export default class ActivitiesController {
-    // constructor(
-    //     private readonly activitiesService: ActivitiesService
-    // ) {}
+    constructor(
+        private readonly activitiesService: ActivitiesService
+    ) { }
 
     @UseGuards(JwtAuthGuard)
-    @Get('history')
+    @Get('list')
     async getActivitiesHistory(@Req() request: Request) {
         const user = request.user;
 
-        // return this.activitiesService.getActivitiesHistory(user.id as string);
+        return this.activitiesService.getActivitiesHistory((user as any).id as string);
     }
 
-    @UseGuards(JwtAuthGuard)
-    @Get('test')
-    async testJwt(@Req() request: Request) {
-        const user = request.user;
-
-        console.log(user)
-        return "asuk"
-        // return this.activitiesService.getActivitiesHistory(user.id as string);
-    }
 }
