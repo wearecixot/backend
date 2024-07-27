@@ -1,4 +1,4 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 
 export enum Activity {
@@ -16,7 +16,7 @@ export interface ActivityData {
 
 @Entity('user_activities')
 export abstract class UserActivityEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({ type: 'timestamp' })
@@ -36,4 +36,7 @@ export abstract class UserActivityEntity {
 
     @Column({type: 'jsonb'})
     activityData: ActivityData;
+
+    @CreateDateColumn()
+    createdAt: Date;
 }

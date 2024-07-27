@@ -3,7 +3,7 @@ import { UserActivityEntity } from "./user-activities.entity";
 
 @Entity('users')
 export abstract class UserEntity {
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn('uuid')
     id: string;
 
     @Column({ type: 'text' })

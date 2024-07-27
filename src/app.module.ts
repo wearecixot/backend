@@ -7,6 +7,7 @@ import { UserActivityEntity } from './model/user-activities.entity';
 import AuthenticationModule from './api/authentications/authentication.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/strategy/jwt.strategy';
+import ActivitiesModule from './api/activities/activities.module';
 
 @Module({
   imports: [
@@ -28,7 +29,8 @@ import { JwtStrategy } from './auth/strategy/jwt.strategy';
       secret: 'secret',
       signOptions: { expiresIn: '48h' },
     }),
-    AuthenticationModule
+    AuthenticationModule,
+    ActivitiesModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],
