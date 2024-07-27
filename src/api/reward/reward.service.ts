@@ -48,6 +48,12 @@ export default class RewardService {
 
         await this.userRepo.save(user);
 
-        return reward;
+        return {
+            id: reward.id,
+            name: reward.name,
+            media: reward.media,
+            merchant: reward.merchant,
+            tier: reward.tier
+        }
     }
 }
