@@ -16,10 +16,10 @@ export default class ClaimedRewardEntity {
     @ManyToOne(() => RewardEntity, reward => reward.claimedRewards)
     reward: RewardEntity;
 
-    @Column({ type: 'timestamp'})
+    @Column({ type: 'timestamp' })
     expiredDate: Date;
 
-    @Column()
+    @Column({ type: 'timestamp', nullable: true })
     usedDate: Date;
 
     @Column()

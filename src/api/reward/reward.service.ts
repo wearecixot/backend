@@ -7,7 +7,7 @@ import ActivitiesService from "../activity/activity.service";
 import { ActivityType } from "src/model/user-activities.entity";
 import ClaimedRewardEntity from "src/model/claimed-reward.entity";
 import { faker } from '@faker-js/faker';
-import dayjs from "dayjs";
+import * as dayjs from "dayjs";
 
 const REWARD_PRICE = {
     [RewardTier.ONE]: 100,
@@ -111,6 +111,9 @@ export default class RewardService {
                 user: {
                     id: userId
                 }
+            },
+            relations: {
+                reward: true
             }
         })
 
