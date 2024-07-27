@@ -4,6 +4,7 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './model/user.entity';
 import { UserActivityEntity } from './model/user-activities.entity';
+import { StravaEntity } from './model/strava.entity';
 
 @Module({
   imports: [
@@ -16,7 +17,8 @@ import { UserActivityEntity } from './model/user-activities.entity';
       type: 'postgres',
       entities: [
         UserEntity,
-        UserActivityEntity
+        UserActivityEntity,
+        StravaEntity
       ],
       synchronize: true,
     })

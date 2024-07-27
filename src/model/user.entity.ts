@@ -1,5 +1,6 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserActivityEntity } from "./user-activities.entity";
+import { StravaEntity } from "./strava.entity";
 
 @Entity('users')
 export abstract class UserEntity {
@@ -26,5 +27,8 @@ export abstract class UserEntity {
 
     @OneToMany(() => UserActivityEntity, userActivities => userActivities.user)
     userActivities: UserActivityEntity[];
+
+    @OneToOne(()=> StravaEntity, strava => strava.user)
+    strava: StravaEntity;
 
 }
