@@ -52,8 +52,6 @@ export default class RewardService {
 
         const reward = rewards[randomIndex];
 
-        user.balance = user.balance - REWARD_PRICE[user.tier];
-
 
         await this.activityService.addActivity(
             user.id,
@@ -70,9 +68,6 @@ export default class RewardService {
             code: faker.string.alphanumeric(5),
             expiredDate: dayjs().add(14, 'day').toDate()
         })
-
-
-        await this.userRepo.save(user);
 
         return {
             id: reward.id,

@@ -32,4 +32,11 @@ export default class ActivitiesController {
         return this.activitiesService.claimPoints((user as any).id as string, activityId);
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Post('add/transport')
+    async addPublicTransportActivity(@Req() request: Request) {
+        const user = request.user;
+        return this.activitiesService.addPublicTransportActivity((user as any).id as string);
+    }
+
 }

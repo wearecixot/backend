@@ -99,7 +99,7 @@ export default class ActivitiesService {
 
         await this.activityRepo.save(newActivity);
 
-        if (user.tierProgress + 1 % 10 === 0) {
+        if (activity && (user.tierProgress + 1) % 10 === 0) {
             const userTier = user.tier
             let newTier = null;
 
@@ -127,7 +127,8 @@ export default class ActivitiesService {
             id: userId
         }, {
             lastActivity: new Date(),
-            tierProgress: user.tierProgress + activity ? 1 : 0
+            tierProgress: user.tierProgress + (activity ? 1 : 0),
+            balance: user.balance + points  
         })
 
 
@@ -171,6 +172,20 @@ export default class ActivitiesService {
         return {
             id: activityId,
             pointAmount: user.balance,
+        }
+    }
+
+    async addPublicTransportActivity(userId: string) {
+        const res = await this.addActivity(userId, Activity.PUBLIC_TRANSPORT, 10, ActivityType.IN, new Date().toISOString(), {
+            calories: 0,
+            distance: 0,
+            in: 'Stasiun Gambir',
+            out: 'Stasiun Sudirman'
+        });
+
+        return {
+            id: res.id,
+            pointAmount: res.pointAmount
         }
     }
 
