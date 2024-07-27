@@ -1,4 +1,5 @@
-import { Column, Entity, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import ClaimedRewardEntity from "./claimed-reward.entity";
 
 export enum RewardTier {
     ONE = 'ONE',
@@ -28,4 +29,7 @@ export default class RewardEntity {
         enum: RewardTier,
     })
     tier: RewardTier;
+
+    @OneToMany(() => ClaimedRewardEntity, claimedReward => claimedReward.reward)
+    claimedRewards: ClaimedRewardEntity[];
 }

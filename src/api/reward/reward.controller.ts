@@ -22,4 +22,12 @@ export default class RewardController {
         return this.rewardService.getAllAvailableRewards();
     }
 
+    @UseGuards(JwtAuthGuard)
+    @Get('my-rewards')
+    async getMyRewards(@Req() request: Request) {
+        const user = request.user as any;
+
+        return this.rewardService.getMyRewards(user.id as string);
+    }
+
 }

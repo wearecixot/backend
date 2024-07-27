@@ -41,7 +41,8 @@ const script = async () => {
             merchant: faker.company.name(),
             name: faker.commerce.product(),
             stock: 999,
-            tier: t
+            tier: t,
+            claimedRewards: []
         })
     }
 

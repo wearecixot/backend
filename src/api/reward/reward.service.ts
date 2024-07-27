@@ -5,7 +5,9 @@ import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
 import ActivitiesService from "../activity/activity.service";
 import { ActivityType } from "src/model/user-activities.entity";
-import { ConfigService } from "@nestjs/config";
+import ClaimedRewardEntity from "src/model/claimed-reward.entity";
+import { faker } from '@faker-js/faker';
+import dayjs from "dayjs";
 
 const REWARD_PRICE = {
     [RewardTier.ONE]: 100,
@@ -20,6 +22,8 @@ export default class RewardService {
         private readonly userRepo: Repository<UserEntity>,
         @InjectRepository(RewardEntity)
         private readonly rewardRepo: Repository<RewardEntity>,
+        @InjectRepository(ClaimedRewardEntity)
+        private readonly claimedRewardRepo: Repository<ClaimedRewardEntity>,
         private readonly activityService: ActivitiesService,
     ) { }
 
@@ -59,6 +63,14 @@ export default class RewardService {
             new Date().toISOString()
         )
 
+        await this.claimedRewardRepo.insert({
+            reward,
+            user,
+            timestamp: new Date().toISOString(),
+            code: faker.string.alphanumeric(5),
+            expiredDate: dayjs().add(14, 'day').toDate()
+        })
+
 
         await this.userRepo.save(user);
 
@@ -81,6 +93,36 @@ export default class RewardService {
                 tier: true
             }
         });
+    }
+
+    async getMyRewards(userId: string) {
+        const user = await this.userRepo.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) {
+            throw new BadRequestException('User not found');
+        }
+
+        const claimedRewards = await this.claimedRewardRepo.find({
+            where: {
+                user: {
+                    id: userId
+                }
+            }
+        })
+
+        return claimedRewards.map(r => ({
+            id: r.reward.id,
+            name: r.reward.name,
+            media: r.reward.media,
+            merchant: r.reward.merchant,
+            tier: r.reward.tier,
+            expiredDate: r.expiredDate,
+            code: r.code
+        }))
     }
 
 }

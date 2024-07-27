@@ -69,14 +69,14 @@ export default class ActivitiesService {
             throw new BadRequestException('User not found');
         }
 
-        if(activity === Activity.PUBLIC_TRANSPORT) {
-            if(!activityData.in || !activityData.out) {
+        if (activity === Activity.PUBLIC_TRANSPORT) {
+            if (!activityData.in || !activityData.out) {
                 throw new BadRequestException('Public transport activity must have in and out data');
             }
         }
 
-        if(activity === Activity.RUN || activity === Activity.BICYCLE) {
-            if(!activityData.distance || !activityData.calories) {
+        if (activity === Activity.RUN || activity === Activity.BICYCLE) {
+            if (!activityData.distance || !activityData.calories) {
                 throw new BadRequestException('Run and bicycle activity must have distance data and calories data');
             }
         }
@@ -88,12 +88,12 @@ export default class ActivitiesService {
             user: user,
             createdAt: new Date(),
             timeStamp: timestamp,
-            activityData: {
+            activityData: activityData ? {
                 calories: activityData?.calories || 0,
                 distance: activityData?.distance || 0,
                 in: activityData?.in || '',
                 out: activityData?.out || ''
-            }
+            } : undefined
         })
 
         await this.activityRepo.save(newActivity);

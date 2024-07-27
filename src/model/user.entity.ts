@@ -1,6 +1,7 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserActivityEntity } from "./user-activities.entity";
 import { RewardTier } from "./reward.entity";
+import ClaimedRewardEntity from "./claimed-reward.entity";
 
 @Entity('users')
 export abstract class UserEntity {
@@ -48,6 +49,10 @@ export abstract class UserEntity {
 
     @Column({ type: 'integer', default: 0 })
     tierProgress: number;
+
+    @OneToMany(() => ClaimedRewardEntity, claimedReward => claimedReward.user)
+    claimedRewards: ClaimedRewardEntity[];
+
 }
 
 

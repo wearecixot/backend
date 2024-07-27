@@ -12,6 +12,7 @@ import RewardEntity from './model/reward.entity';
 import RewardModule from './api/reward/reward.module';
 import { ConfigModule } from '@nestjs/config';
 import ProfileModule from './api/profile/profile.module';
+import ClaimedRewardEntity from './model/claimed-reward.entity';
 
 @Module({
   imports: [
@@ -25,7 +26,8 @@ import ProfileModule from './api/profile/profile.module';
       entities: [
         UserEntity,
         UserActivityEntity,
-        RewardEntity
+        RewardEntity,
+        ClaimedRewardEntity
       ],
       synchronize: true,
     }),
