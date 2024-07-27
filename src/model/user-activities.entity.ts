@@ -30,6 +30,7 @@ export abstract class UserActivityEntity {
     @Column({
         type: 'enum',
         enum: Activity,
+        nullable: true
     })
     activity: Activity;
 
@@ -39,7 +40,7 @@ export abstract class UserActivityEntity {
     @ManyToOne(() => UserEntity, user => user.userActivities)
     user: UserEntity;
 
-    @Column({type: 'jsonb'})
+    @Column({type: 'jsonb', nullable: true})
     activityData: ActivityData;
 
     @CreateDateColumn()

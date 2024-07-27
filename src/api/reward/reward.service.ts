@@ -3,6 +3,8 @@ import { InjectRepository } from "@nestjs/typeorm";
 import RewardEntity, { RewardTier } from "src/model/reward.entity";
 import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
+import ActivitiesService from "../activity/activity.service";
+import { ActivityType } from "src/model/user-activities.entity";
 
 const REWARD_PRICE = {
     [RewardTier.ONE]: 100,
@@ -16,7 +18,8 @@ export default class RewardService {
         @InjectRepository(UserEntity)
         private readonly userRepo: Repository<UserEntity>,
         @InjectRepository(RewardEntity)
-        private readonly rewardRepo: Repository<RewardEntity>
+        private readonly rewardRepo: Repository<RewardEntity>,
+        private readonly activityService: ActivitiesService
     ) { }
 
     async redeemReward(userId: string) {
@@ -45,6 +48,16 @@ export default class RewardService {
         const reward = rewards[randomIndex];
 
         user.balance = user.balance - REWARD_PRICE[user.tier];
+
+
+        await this.activityService.addActivity(
+            user.id,
+            undefined,
+            REWARD_PRICE[user.tier] * -1,
+            ActivityType.OUT,
+            new Date().toISOString()
+        )
+
 
         await this.userRepo.save(user);
 
