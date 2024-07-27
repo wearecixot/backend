@@ -3,6 +3,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 import { ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
+import { UpdateProfileDto } from "./dto/profile.dto";
 
 @Injectable()
 export default class ProfileService {
@@ -42,4 +43,46 @@ export default class ProfileService {
             redeemedRewards: rewardCount
         }
     }
+
+    async updateProfile(userId: string, body: UpdateProfileDto){
+        const user = await this.userRepository.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        if (!user) {
+            throw new UnauthorizedException('User not found');
+        }
+
+        if(body.fullName){
+            user.fullName = body.fullName;
+        }
+
+        if(body.username){
+            const checkIsUsernameExist = await this.userRepository.findOne({
+                where: {
+                    username: body.username
+                }
+            })
+
+            if(checkIsUsernameExist && checkIsUsernameExist.id !== user.id){
+                throw new UnauthorizedException('Username already exist');
+            }
+
+            user.username = body.username;
+        }
+
+        await this.userRepository.save(user);
+
+        return {
+            fullName: user.fullName,
+            userName: user.username,
+            profilePicture: user.profile,
+            points: user.balance
+        }
+
+
+    }
+
 }
