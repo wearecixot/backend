@@ -81,7 +81,16 @@ export default class ActivitiesService {
             balance: activity.user.balance + activity.pointAmount
         })
 
-        return activity;
+        const user = await this.userRepo.findOne({
+            where: {
+                id: userId
+            }
+        })
+
+        return {
+            id: activityId,
+            pointAmount: user.balance,
+        }
     }
 
 }
