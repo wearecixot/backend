@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import { Activity, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
+import { Activity, ActivityData, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
 
@@ -58,7 +58,7 @@ export default class ActivitiesService {
         }
     }
 
-    async addActivity(userId: string, activity: Activity, points: number, type: ActivityType, timestamp: string) {
+    async addActivity(userId: string, activity: Activity, points: number, type: ActivityType, timestamp: string, activityData?: ActivityData) {
         const user = await this.userRepo.findOne({
             where: {
                 id: userId
@@ -69,6 +69,18 @@ export default class ActivitiesService {
             throw new BadRequestException('User not found');
         }
 
+        if(activity === Activity.PUBLIC_TRANSPORT) {
+            if(!activityData.in || !activityData.out) {
+                throw new BadRequestException('Public transport activity must have in and out data');
+            }
+        }
+
+        if(activity === Activity.RUN || activity === Activity.BICYCLE) {
+            if(!activityData.distance || !activityData.calories) {
+                throw new BadRequestException('Run and bicycle activity must have distance data and calories data');
+            }
+        }
+
         const newActivity = await this.activityRepo.create({
             pointAmount: points,
             type: type,
@@ -76,6 +88,12 @@ export default class ActivitiesService {
             user: user,
             createdAt: new Date(),
             timeStamp: timestamp,
+            activityData: {
+                calories: activityData.calories || 0,
+                distance: activityData.distance || 0,
+                in: activityData.in || '',
+                out: activityData.out || ''
+            }
         })
 
         await this.activityRepo.save(newActivity);

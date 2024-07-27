@@ -13,10 +13,10 @@ export enum ActivityType {
 }
 
 export interface ActivityData {
-    distance: number;
-    duration: number;
-    calories: number;
-    steps: number;
+    calories?: number;
+    distance?: number;
+    in?: string;
+    out?: string;
 }
 
 @Entity('user_activities')
