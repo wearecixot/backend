@@ -1,5 +1,4 @@
-import { BadRequestException, Injectable } from "@nestjs/common";
-import { ConfigService } from "@nestjs/config";
+import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
 import { Activity, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
@@ -12,7 +11,7 @@ export default class ActivitiesService {
         private readonly activityRepo: Repository<UserActivityEntity>,
         @InjectRepository(UserEntity)
         private readonly userRepo: Repository<UserEntity>,
-    ) {}
+    ) { }
 
     async getActivitiesHistory(userId: string) {
         const activities = await this.activityRepo.find({
@@ -36,7 +35,7 @@ export default class ActivitiesService {
             }
         })
 
-        if(!user) {
+        if (!user) {
             throw new BadRequestException('User not found');
         }
 
@@ -52,6 +51,37 @@ export default class ActivitiesService {
         await this.activityRepo.save(newActivity);
 
         return newActivity;
+    }
+
+    async claimPoints(activityId: string, userId: string) {
+        const activity = await this.activityRepo.findOne({
+            where: {
+                id: activityId,
+                user: {
+                    id: userId
+                }
+            }
+        })
+
+        if (!activity) {
+            throw new NotFoundException('Activity not found');
+        }
+
+        if (activity.isPointClaimed) {
+            throw new BadRequestException('Points already claimed');
+        }
+
+        activity.isPointClaimed = true;
+
+        await this.activityRepo.save(activity);
+
+        await this.userRepo.update({
+            id: activity.user.id
+        }, {
+            balance: activity.user.balance + activity.pointAmount
+        })
+
+        return activity;
     }
 
 }
