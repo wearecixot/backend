@@ -1,5 +1,6 @@
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import { RewardTier } from "src/model/reward.entity";
 import { Activity, ActivityData, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
@@ -98,12 +99,37 @@ export default class ActivitiesService {
 
         await this.activityRepo.save(newActivity);
 
+        if (user.tierProgress + 1 % 10 === 0) {
+            const userTier = user.tier
+            let newTier = null;
+
+            switch (userTier) {
+                case 'ONE':
+                    newTier = RewardTier.TWO;
+                    break;
+                case 'TWO':
+                    newTier = RewardTier.THREE;
+                    break;
+                case 'THREE':
+                    newTier = RewardTier.THREE;
+                    break;
+            }
+
+            await this.userRepo.update({
+                id: userId
+            }, {
+                tier: newTier,
+                tierProgress: 0
+            })
+        }
+
         await this.userRepo.update({
             id: userId
         }, {
             lastActivity: new Date(),
-            tierProgress: user.tierProgress + 1
+            tierProgress: user.tierProgress + activity ? 1 : 0
         })
+
 
         return newActivity;
     }
