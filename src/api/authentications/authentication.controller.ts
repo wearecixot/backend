@@ -1,5 +1,6 @@
-import { BadRequestException, Controller, Post, Query } from "@nestjs/common";
+import { BadRequestException, Controller,  Post, Query } from "@nestjs/common";
 import AuthenticationService from "./authentication.service";
+import { JwtAuthGuard } from "src/auth/guard/jwt.guard";
 
 @Controller('auth')
 export default class AuthenticationController {

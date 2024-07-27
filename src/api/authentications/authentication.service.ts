@@ -76,5 +76,4 @@ export default class AuthenticationService {
             throw new BadRequestException('Error in Strava Login');
         }
     }
-
 }
