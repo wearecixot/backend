@@ -4,10 +4,12 @@ import { AppService } from './app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { UserEntity } from './model/user.entity';
 import { UserActivityEntity } from './model/user-activities.entity';
-import AuthenticationModule from './api/authentications/authentication.module';
+import AuthenticationModule from './api/authentication/authentication.module';
 import { JwtModule } from '@nestjs/jwt';
 import { JwtStrategy } from './auth/strategy/jwt.strategy';
-import ActivitiesModule from './api/activities/activities.module';
+import ActivitiesModule from './api/activity/activity.module';
+import RewardEntity from './model/reward.entity';
+import RewardModule from './api/reward/reward.module';
 
 @Module({
   imports: [
@@ -21,6 +23,7 @@ import ActivitiesModule from './api/activities/activities.module';
       entities: [
         UserEntity,
         UserActivityEntity,
+        RewardEntity
       ],
       synchronize: true,
     }),
@@ -30,7 +33,8 @@ import ActivitiesModule from './api/activities/activities.module';
       signOptions: { expiresIn: '48h' },
     }),
     AuthenticationModule,
-    ActivitiesModule
+    ActivitiesModule,
+    RewardModule
   ],
   controllers: [AppController],
   providers: [AppService, JwtStrategy],

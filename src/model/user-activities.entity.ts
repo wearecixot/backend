@@ -7,6 +7,11 @@ export enum Activity {
     PUBLIC_TRANSPORT = 'PUBLIC_TRANSPORT',
 }
 
+export enum ActivityType {
+    IN = 'IN',
+    OUT = 'OUT',
+}
+
 export interface ActivityData {
     distance: number;
     duration: number;
@@ -39,4 +44,10 @@ export abstract class UserActivityEntity {
 
     @CreateDateColumn()
     createdAt: Date;
+
+    @Column({
+        type: 'enum',
+        enum: ActivityType,
+    })
+    type: ActivityType;
 }
