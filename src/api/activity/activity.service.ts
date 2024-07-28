@@ -42,7 +42,7 @@ export default class ActivitiesService {
                 name: activity.name,
                 createdAt: activity.createdAt,
                 amount: Math.abs(activity.pointAmount),
-                isClaimed: activity.isPointClaimed,
+                isClaimed: activity.type === ActivityType.OUT ? true : activity?.isPointClaimed,
                 metadata: {
                     calories: activity.activityData?.calories || 0,
                     distance: activity.activityData?.distance || 0,
