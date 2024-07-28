@@ -46,8 +46,8 @@ export default class ActivitiesService {
                     calories: activity.activityData?.calories || 0,
                     distance: activity.activityData?.distance || 0,
                     type: activity.activity,
-                    merchant: activity.claimedReward.reward.merchant || '',
-                    rewardName: activity.claimedReward.reward.name || ''
+                    merchant: activity.claimedReward?.reward?.merchant || '',
+                    rewardName: activity.claimedReward?.reward?.name || ''
                 }
             }
         })
