@@ -1,10 +1,11 @@
-import { faker } from "@faker-js/faker";
 import { BadRequestException, Injectable, NotFoundException } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
+import axios from "axios";
+import * as dayjs from "dayjs";
 import { RewardTier } from "src/model/reward.entity";
 import { Activity, ActivityData, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
 import { UserEntity } from "src/model/user.entity";
-import { Repository } from "typeorm";
+import { MoreThanOrEqual, Repository } from "typeorm";
 
 @Injectable()
 export default class ActivitiesService {
@@ -177,22 +178,77 @@ export default class ActivitiesService {
     }
 
     async addPublicTransportActivity(userId: string) {
-        const point = faker.number.int({
-            min: 50,
-            max: 70
-        })
+        const point = await this.calculatePoint(userId, Activity.PUBLIC_TRANSPORT, undefined);
+
+        const { data } = await axios.get('https://www.comuline.com/api/trpc/schedule.getByStationId,schedule.getByStationId,schedule.getByStationId?batch=1&input=%7B%220%22%3A%7B%22json%22%3A%22DP%22%7D%2C%221%22%3A%7B%22json%22%3A%22TNG%22%7D%2C%222%22%3A%7B%22json%22%3A%22boo%22%7D%7D')
+
+        const line = data[0].result.data.json
+
+        const randomIndex = Math.floor(Math.random() * line.length);
+
+        const pickedLine = line[randomIndex];
+        const inLocation = pickedLine['route'].split('-')[0]
+        const outLocation = pickedLine['route'].split('-')[1]
 
         const res = await this.addActivity(userId, Activity.PUBLIC_TRANSPORT, point, ActivityType.IN, new Date().toISOString(), {
             calories: 0,
             distance: 0,
-            in: 'Stasiun Gambir',
-            out: 'Stasiun Sudirman'
+            in: inLocation,
+            out: outLocation
         });
 
         return {
             id: res.id,
-            pointAmount: res.pointAmount
+            pointAmount: res.pointAmount,
+            in: inLocation,
+            out: outLocation
         }
+    }
+
+    async calculatePoint(userId: string, activity: Activity, distance: number) {
+        // distance in KM
+
+        let point = 0;
+
+        if (activity !== Activity.PUBLIC_TRANSPORT) {
+            switch (activity) {
+                case Activity.RUN:
+                    point = distance * 50;
+                    break;
+                case Activity.BICYCLE:
+                    point = distance * 25;
+                    break;
+            }
+        } else {
+            point = 30;
+            let isThreeDaysConsicutivelyUsePublicTransport = true
+            // check if its 3 consecutive day of public transport, if yes give 
+            const ptActivities = await this.activityRepo.find({
+                where: {
+                    user: {
+                        id: userId
+                    },
+                    activity: Activity.PUBLIC_TRANSPORT,
+                    createdAt: MoreThanOrEqual(dayjs().subtract(3, 'day').toDate())
+                }
+            })
+
+            for (let i = 0; i < 3; i++) {
+                const currentDay = dayjs().subtract(i, 'day').toDate()
+
+                // find if the user has public transport activity on that day
+                const activity = ptActivities.find(activity => dayjs(activity.createdAt).isSame(currentDay, 'day'))
+                if (!activity) {
+                    isThreeDaysConsicutivelyUsePublicTransport = false
+                    break;
+                }
+            }
+
+            if (isThreeDaysConsicutivelyUsePublicTransport) {
+                point = 40;
+            }
+        }
+        return point;
     }
 
 }
