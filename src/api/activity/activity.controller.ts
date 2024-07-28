@@ -29,7 +29,7 @@ export default class ActivitiesController {
     @Post('claim-points/:activityId')
     async claimPoints(@Req() request: Request, @Param('activityId') activityId: string) {
         const user = request.user;
-        return this.activitiesService.claimPoints((user as any).id as string, activityId);
+        return this.activitiesService.claimPoints(activityId, (user as any).id as string);
     }
 
     @UseGuards(JwtAuthGuard)
