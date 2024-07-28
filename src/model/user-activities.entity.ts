@@ -1,6 +1,5 @@
 import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
-import RewardEntity from "./reward.entity";
 import ClaimedRewardEntity from "./claimed-reward.entity";
 
 export enum Activity {
