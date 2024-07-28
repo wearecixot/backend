@@ -2,9 +2,9 @@ import { BadRequestException, Injectable, NotFoundException } from "@nestjs/comm
 import { InjectRepository } from "@nestjs/typeorm";
 import axios from "axios";
 import * as dayjs from "dayjs";
-import { RewardTier } from "src/model/reward.entity";
-import { Activity, ActivityData, ActivityType, UserActivityEntity } from "src/model/user-activities.entity";
-import { UserEntity } from "src/model/user.entity";
+import { RewardTier } from "../../model/reward.enum";
+import { Activity, ActivityData, ActivityType, UserActivityEntity } from "../../model/user-activities.entity";
+import { UserEntity } from "../../model/user.entity";
 import { MoreThanOrEqual, Repository } from "typeorm";
 
 @Injectable()
@@ -25,10 +25,35 @@ export default class ActivitiesService {
             },
             order: {
                 createdAt: 'DESC'
+            },
+            relations: {
+                claimedReward: {
+                    reward: true
+                }
             }
         })
 
-        return activities;
+
+        const result = activities.map(activity => {
+            return {
+                id: activity.id,
+                type: activity.type,
+                name: activity.name,
+                createdAt: activity.createdAt,
+                amount: Math.abs(activity.pointAmount),
+                isClaimed: activity.isPointClaimed,
+                metadata: {
+                    calories: activity.activityData?.calories || 0,
+                    distance: activity.activityData?.distance || 0,
+                    type: activity.activity,
+                    merchant: activity.claimedReward.reward.merchant || '',
+                    rewardName: activity.claimedReward.reward.name || ''
+                }
+            }
+        })
+
+
+        return result;
     }
 
     async getActivitiesHeader(userId: string) {
@@ -55,13 +80,13 @@ export default class ActivitiesService {
             totalCommute: userActivities.filter(activity => activity.activity === Activity.PUBLIC_TRANSPORT).length,
             totalRun: userActivities.filter(activity => activity.activity === Activity.RUN).length,
             totalBicycle: userActivities.filter(activity => activity.activity === Activity.BICYCLE).length,
-            totalCalories: 0, // TODO: create logic for deriving total calories
+            totalCalories: await this.getAllUserCaloriesBurned(userId),
             tier: user.tier,
             tierProgress: user.tierProgress % 10,
         }
     }
 
-    async addActivity(userId: string, activity: Activity, points: number, type: ActivityType, timestamp: string, activityData?: ActivityData) {
+    async addActivity(name: string, userId: string, activity: Activity, points: number, type: ActivityType, timestamp: string, activityData?: ActivityData) {
         const user = await this.userRepo.findOne({
             where: {
                 id: userId
@@ -91,6 +116,7 @@ export default class ActivitiesService {
             user: user,
             createdAt: new Date(),
             timeStamp: timestamp,
+            name: name,
             activityData: activityData ? {
                 calories: activityData?.calories || 0,
                 distance: activityData?.distance || 0,
@@ -190,7 +216,7 @@ export default class ActivitiesService {
         const inLocation = pickedLine['route'].split('-')[0]
         const outLocation = pickedLine['route'].split('-')[1]
 
-        const res = await this.addActivity(userId, Activity.PUBLIC_TRANSPORT, point, ActivityType.IN, new Date().toISOString(), {
+        const res = await this.addActivity('KRL', userId, Activity.PUBLIC_TRANSPORT, point, ActivityType.IN, new Date().toISOString(), {
             calories: 0,
             distance: 0,
             in: inLocation,
@@ -203,6 +229,12 @@ export default class ActivitiesService {
             in: inLocation,
             out: outLocation
         }
+    }
+
+    async addRunActivity(userId: string, distance: number) {
+
+
+
     }
 
     async calculatePoint(userId: string, activity: Activity, distance: number) {
@@ -249,6 +281,25 @@ export default class ActivitiesService {
             }
         }
         return point;
+    }
+
+    async getAllUserCaloriesBurned(userId: string) {
+        const activities = await this.activityRepo.find({
+            where: {
+                user: {
+                    id: userId
+                }
+            }
+        })
+
+        const totalCalories = activities.reduce((acc, activity) => {
+            if (activity.activity === Activity.RUN || activity.activity === Activity.BICYCLE) {
+                acc += activity.activityData.calories;
+            }
+            return acc;
+        }, 0)
+
+        return totalCalories
     }
 
 }

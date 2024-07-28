@@ -1,6 +1,6 @@
 import { BadRequestException, Injectable } from "@nestjs/common";
 import { InjectRepository } from "@nestjs/typeorm";
-import RewardEntity, { RewardTier } from "src/model/reward.entity";
+import RewardEntity from "src/model/reward.entity";
 import { UserEntity } from "src/model/user.entity";
 import { Repository } from "typeorm";
 import ActivitiesService from "../activity/activity.service";
@@ -8,6 +8,7 @@ import { ActivityType } from "src/model/user-activities.entity";
 import ClaimedRewardEntity from "src/model/claimed-reward.entity";
 import { faker } from '@faker-js/faker';
 import * as dayjs from "dayjs";
+import { RewardTier } from "src/model/reward.enum";
 
 const REWARD_PRICE = {
     [RewardTier.ONE]: 100,
@@ -52,8 +53,8 @@ export default class RewardService {
 
         const reward = rewards[randomIndex];
 
-
-        await this.activityService.addActivity(
+        const activity = await this.activityService.addActivity(
+            reward.name,
             user.id,
             undefined,
             REWARD_PRICE[user.tier] * -1,
@@ -66,7 +67,8 @@ export default class RewardService {
             user,
             timestamp: new Date().toISOString(),
             code: faker.string.alphanumeric(5),
-            expiredDate: dayjs().add(14, 'day').toDate()
+            expiredDate: dayjs().add(14, 'day').toDate(),
+            userActivity: activity
         })
 
         return {

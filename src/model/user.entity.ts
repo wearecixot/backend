@@ -1,7 +1,7 @@
 import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserActivityEntity } from "./user-activities.entity";
-import { RewardTier } from "./reward.entity";
 import ClaimedRewardEntity from "./claimed-reward.entity";
+import { RewardTier } from "./reward.enum";
 
 @Entity('users')
 export abstract class UserEntity {
@@ -38,7 +38,7 @@ export abstract class UserEntity {
     @Column({ type: 'text', nullable: true })
     profile: string;
 
-    @Column({type: 'enum', enum: RewardTier, default: RewardTier.ONE})
+    @Column({type: 'enum', enum: RewardTier, default: "ONE"})
     tier: RewardTier;
 
     @OneToMany(() => UserActivityEntity, userActivities => userActivities.user)

@@ -1,6 +1,7 @@
-import { Column, Entity, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
 import RewardEntity from "./reward.entity";
+import { UserActivityEntity } from "./user-activities.entity";
 
 @Entity('claimed-reward')
 export default class ClaimedRewardEntity {
@@ -24,4 +25,8 @@ export default class ClaimedRewardEntity {
 
     @Column()
     code: string;
+
+    @OneToOne(()=> UserActivityEntity, userActivity => userActivity.claimedReward)
+    @JoinColumn()
+    userActivity: UserActivityEntity;
 }

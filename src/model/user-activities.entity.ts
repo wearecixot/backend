@@ -1,5 +1,7 @@
-import { Column, CreateDateColumn, Entity, ManyToOne, PrimaryGeneratedColumn } from "typeorm";
+import { Column, CreateDateColumn, Entity, JoinColumn, ManyToOne, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import { UserEntity } from "./user.entity";
+import RewardEntity from "./reward.entity";
+import ClaimedRewardEntity from "./claimed-reward.entity";
 
 export enum Activity {
     RUN = 'RUN',
@@ -17,12 +19,16 @@ export interface ActivityData {
     distance?: number;
     in?: string;
     out?: string;
+    rewardId?: string;
 }
 
 @Entity('user_activities')
 export abstract class UserActivityEntity {
     @PrimaryGeneratedColumn('uuid')
     id: string;
+
+    @Column({ type: 'text' })
+    name: string;
 
     @Column({ type: 'timestamp' })
     timeStamp: Date;
@@ -34,13 +40,13 @@ export abstract class UserActivityEntity {
     })
     activity: Activity;
 
-    @Column({ type: 'double precision'})
+    @Column({ type: 'double precision' })
     pointAmount: number;
 
     @ManyToOne(() => UserEntity, user => user.userActivities)
     user: UserEntity;
 
-    @Column({type: 'jsonb', nullable: true})
+    @Column({ type: 'jsonb', nullable: true })
     activityData: ActivityData;
 
     @CreateDateColumn()
@@ -54,4 +60,8 @@ export abstract class UserActivityEntity {
 
     @Column({ type: 'boolean', default: false })
     isPointClaimed: boolean;
+
+    @OneToOne(() => ClaimedRewardEntity, reward => reward.userActivity)
+    claimedReward: ClaimedRewardEntity;
+
 }

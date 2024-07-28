@@ -1,11 +1,8 @@
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from "typeorm";
+import { Column, Entity, OneToMany, OneToOne, PrimaryGeneratedColumn } from "typeorm";
 import ClaimedRewardEntity from "./claimed-reward.entity";
+import { RewardTier } from "./reward.enum";
 
-export enum RewardTier {
-    ONE = 'ONE',
-    TWO = 'TWO',
-    THREE = 'THREE',
-}
+
 
 @Entity('reward')
 export default class RewardEntity {

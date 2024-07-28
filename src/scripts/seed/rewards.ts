@@ -1,6 +1,10 @@
-import RewardEntity, { RewardTier } from "../../../src/model/reward.entity"
+import RewardEntity from "../../model/reward.entity"
 import { DataSource } from "typeorm"
 import { faker } from '@faker-js/faker';
+import ClaimedRewardEntity from "../../model/claimed-reward.entity";
+import { UserEntity } from "../../model/user.entity";
+import { UserActivityEntity } from "../../model/user-activities.entity";
+import { RewardTier } from "../../model/reward.enum";
 
 const dataSource = new DataSource({
     type: 'postgres',
@@ -10,7 +14,10 @@ const dataSource = new DataSource({
     password: 'toxic2024',
     database: 'toxic_db',
     entities: [
-        RewardEntity
+        RewardEntity,
+        ClaimedRewardEntity,
+        UserEntity,
+        UserActivityEntity
     ]
 })
 
@@ -42,7 +49,7 @@ const script = async () => {
             name: faker.commerce.product(),
             stock: 999,
             tier: t,
-            claimedRewards: []
+            claimedRewards: [],
         })
     }
 
