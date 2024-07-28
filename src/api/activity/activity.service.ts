@@ -172,6 +172,9 @@ export default class ActivitiesService {
                 user: {
                     id: userId
                 }
+            },
+            relations: {
+                user: true
             }
         })
 
