@@ -6,6 +6,7 @@ import { RewardTier } from "../../model/reward.enum";
 import { Activity, ActivityData, ActivityType, UserActivityEntity } from "../../model/user-activities.entity";
 import { UserEntity } from "../../model/user.entity";
 import { MoreThanOrEqual, Repository } from "typeorm";
+import { faker } from '@faker-js/faker';
 
 @Injectable()
 export default class ActivitiesService {
@@ -236,10 +237,25 @@ export default class ActivitiesService {
         }
     }
 
-    async addRunActivity(userId: string, distance: number) {
+    async addRandomizedActivity(userId: string) {
+        const randomIndex = Math.floor(Math.random() * 2);
+        const distance = faker.number.float({ min: 1, max: 10, precision: 0.1 });
+        const activity = randomIndex === 0 ? Activity.RUN : Activity.BICYCLE;
+        const activityName = randomIndex === 0 ? 'Run' : 'Bicycle';
+        const point = await this.calculatePoint(userId, activity, distance);
 
+        const res = await this.addActivity(activityName, userId, activity, point, ActivityType.IN, new Date().toISOString(), {
+            calories: faker.number.float({ min: 100, max: 500, precision: 0.1 }),
+            distance: distance,
+            in: '',
+            out: ''
+        });
 
-
+        return {
+            id: res.id,
+            pointAmount: res.pointAmount,
+            distance: distance
+        }
     }
 
     async calculatePoint(userId: string, activity: Activity, distance: number) {

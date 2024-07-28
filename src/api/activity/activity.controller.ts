@@ -39,10 +39,11 @@ export default class ActivitiesController {
         return this.activitiesService.addPublicTransportActivity((user as any).id as string);
     }
 
-    // @UseGuards(JwtAuthGuard)
-    // @Post('add/run')
-    // async addRunActivity(@Req() request: Request) {
-    //     const user = request.user;
-    //     return this.activitiesService.addRunActivity((user as any).id as string)};
+    @UseGuards(JwtAuthGuard)
+    @Post('add/random')
+    async addRunActivity(@Req() request: Request) {
+        const user = request.user;
+        return this.activitiesService.addRandomizedActivity((user as any).id as string)
+    };
 
 }
